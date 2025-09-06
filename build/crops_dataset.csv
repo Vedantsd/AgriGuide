@@ -1,0 +1,43 @@
+crop_name,ph_min,ph_max,moisture_min,moisture_max,soil_type,temperature_min,temperature_max,rainfall_min,rainfall_max,location,month_start,month_end,nitrogen,phosphorus,potassium
+Rice,5.5,6.5,80,90,Clay,20,30,150,300,Tropical,6,10,120,40,40
+Wheat,6.0,7.5,40,60,Loam,15,25,50,100,Temperate,11,4,100,50,50
+Corn,5.8,6.8,50,70,Loam,18,27,60,120,Temperate,4,7,150,60,40
+Tomato,6.0,6.8,60,80,Sandy Loam,18,24,50,80,Temperate,3,6,200,80,200
+Potato,5.0,6.0,70,85,Sandy Loam,15,20,50,70,Temperate,2,5,120,50,200
+Sugarcane,6.0,8.0,75,85,Clay,26,32,100,150,Tropical,3,6,200,60,150
+Cotton,5.5,8.0,50,70,Clay,21,30,50,100,Semi-arid,4,7,120,50,50
+Soybean,6.0,7.0,60,80,Loam,20,30,60,100,Temperate,5,7,50,30,60
+Barley,6.0,7.5,40,60,Loam,12,20,40,70,Temperate,10,3,90,40,40
+Oats,5.5,7.0,50,70,Loam,15,20,45,65,Temperate,9,12,100,45,45
+Millet,6.0,8.0,30,50,Sandy,25,35,25,75,Arid,6,9,40,20,40
+Sorghum,5.5,8.5,40,60,Clay,25,35,40,80,Semi-arid,6,10,100,40,40
+Sunflower,6.0,7.5,50,70,Loam,20,25,50,75,Temperate,3,6,100,50,50
+Groundnut,5.5,7.0,50,75,Sandy Loam,25,30,50,100,Tropical,6,10,20,60,120
+Chickpea,6.0,7.5,40,60,Loam,15,25,30,40,Semi-arid,11,3,25,60,70
+Pigeon Pea,5.5,7.0,50,70,Loam,20,30,60,100,Tropical,6,11,40,30,70
+Lentil,6.0,7.5,50,70,Loam,15,25,25,50,Temperate,10,3,25,60,30
+Black Gram,6.0,7.5,60,80,Loam,25,35,60,100,Tropical,7,10,40,60,20
+Green Gram,6.5,7.5,50,70,Sandy Loam,25,35,50,75,Tropical,3,6,25,50,50
+Sesame,5.5,8.0,40,60,Sandy Loam,25,30,50,65,Tropical,6,9,50,40,50
+Mustard,6.0,7.5,50,70,Loam,10,25,25,40,Temperate,10,2,120,40,40
+Safflower,6.0,8.5,40,60,Loam,15,25,35,60,Semi-arid,10,3,60,30,30
+Castor,5.5,8.5,40,60,Sandy Loam,20,26,50,75,Semi-arid,6,10,100,50,50
+Jute,4.8,5.8,80,90,Clay,24,35,120,200,Tropical,4,7,60,25,25
+Tea,4.5,6.0,80,90,Loam,20,30,150,250,Tropical,1,12,100,30,30
+Coffee,6.0,7.0,70,80,Loam,15,25,150,200,Tropical,1,12,120,60,60
+Rubber,4.5,6.5,80,90,Loam,25,35,200,400,Tropical,1,12,150,50,100
+Coconut,5.2,8.0,70,80,Sandy Loam,27,32,100,200,Tropical,1,12,100,20,140
+Banana,5.5,7.0,75,85,Loam,26,30,100,200,Tropical,1,12,200,75,300
+Mango,5.5,7.5,60,80,Loam,24,30,75,125,Tropical,1,12,100,50,100
+Apple,5.5,6.5,60,80,Loam,15,25,100,125,Temperate,1,12,100,50,100
+Orange,5.5,6.5,70,80,Sandy Loam,15,30,100,150,Temperate,1,12,120,40,80
+Grapes,6.0,7.0,50,70,Loam,15,25,50,100,Temperate,1,12,60,20,120
+Onion,6.0,7.0,70,80,Loam,13,24,35,60,Temperate,10,3,100,50,50
+Garlic,6.0,7.5,60,70,Sandy Loam,12,25,25,50,Temperate,10,4,80,40,40
+Carrot,5.5,7.0,65,75,Sandy Loam,16,18,35,50,Temperate,9,2,100,40,80
+Cabbage,6.0,6.8,70,80,Loam,15,20,60,90,Temperate,10,2,150,80,200
+Cauliflower,6.0,7.0,70,80,Loam,15,20,60,90,Temperate,9,2,150,80,200
+Spinach,6.0,7.0,70,80,Loam,15,20,35,50,Temperate,10,3,200,50,200
+Brinjal,5.5,6.8,70,80,Loam,18,25,60,90,Tropical,6,11,100,60,150
+Okra,6.0,7.0,60,80,Loam,25,35,50,100,Tropical,3,10,100,60,60
+Chilli,6.0,7.0,60,80,Loam,20,30,60,120,Tropical,1,12,120,60,100
