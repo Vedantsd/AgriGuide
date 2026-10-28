@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}AgriGuide · Statistics{% endblock %}
+
+{% block tagline %}Regression, t-test and F-tests on the crop dataset stored in your database.{% endblock %}
+
+{% block content %}
+<main class="stats-layout">
+
+  <section class="card">
+    <h2>Multiple linear regression</h2>
+    <p class="hint">Predicts a nutrient requirement from average pH, moisture, temperature and rainfall. Includes the overall F-test and a t-test for every coefficient.</p>
+    <div class="control-row">
+      <div class="ctl">
+        <label for="reg-target">Target</label>
+        <select id="reg-target"></select>
+      </div>
+      <button type="button" class="btn" id="reg-run">Run regression</button>
+    </div>
+    <p class="error-msg" id="reg-error"></p>
+    <div id="reg-out"></div>
+  </section>
+
+  <section class="card">
+    <h2>Two-sample t-test and variance F-test</h2>
+    <p class="hint">Compares the mean of a variable between two groups (Welch's t-test) and checks whether their variances differ (F-test).</p>
+    <div class="control-row">
+      <div class="ctl">
+        <label for="t-var">Variable</label>
+        <select id="t-var"></select>
+      </div>
+      <div class="ctl">
+        <label for="t-col">Group by</label>
+        <select id="t-col"></select>
+      </div>
+      <div class="ctl">
+        <label for="t-a">Group A</label>
+        <select id="t-a"></select>
+      </div>
+      <div class="ctl">
+        <label for="t-b">Group B</label>
+        <select id="t-b"></select>
+      </div>
+      <button type="button" class="btn" id="t-run">Run test</button>
+    </div>
+    <p class="error-msg" id="t-error"></p>
+    <div id="t-out"></div>
+  </section>
+
+  <section class="card">
+    <h2>One-way ANOVA (F-test)</h2>
+    <p class="hint">Tests whether the mean of a variable differs across all groups of a category.</p>
+    <div class="control-row">
+      <div class="ctl">
+        <label for="a-var">Variable</label>
+        <select id="a-var"></select>
+      </div>
+      <div class="ctl">
+        <label for="a-col">Group by</label>
+        <select id="a-col"></select>
+      </div>
+      <button type="button" class="btn" id="a-run">Run ANOVA</button>
+    </div>
+    <p class="error-msg" id="a-error"></p>
+    <div id="a-out"></div>
+  </section>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='stats.js') }}"></script>
+{% endblock %}

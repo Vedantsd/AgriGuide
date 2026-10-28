@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}AgriGuide{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="icon" href="{{ url_for('static', filename='src/logo.png') }}" type="image/x-icon">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <img src="{{ url_for('static', filename='src/logo.png') }}" alt="AgriGuide logo" class="logo">
+    <h1>AgriGuide</h1>
+  </div>
+  <nav class="nav">
+    <a href="/" class="{% if request.path == '/' %}active{% endif %}">Predict</a>
+    <a href="/stats" class="{% if request.path == '/stats' %}active{% endif %}">Statistics</a>
+  </nav>
+  <p>{% block tagline %}{% endblock %}</p>
+</header>
+
+{% block content %}{% endblock %}
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

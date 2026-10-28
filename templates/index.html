@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block tagline %}Enter your field's conditions or upload a soil test report to find the best-matching crop.{% endblock %}
+
+{% block content %}
+<main class="layout">
+
+  <section class="card form-card">
+    <h2>Field conditions</h2>
+
+    <div class="upload-box">
+      <label for="report-file">Soil test report (PDF)</label>
+      <div class="upload-row">
+        <input type="file" id="report-file" accept="application/pdf,.pdf">
+        <button type="button" class="btn" id="upload-btn">Auto-fill</button>
+      </div>
+      <p class="upload-status" id="upload-status"></p>
+    </div>
+
+    <form id="predict-form">
+
+      <div class="field-row">
+        <label for="ph">Soil pH</label>
+        <input type="number" id="ph" step="0.1" min="0" max="14" placeholder="e.g. 6.2" required>
+      </div>
+
+      <div class="field-row">
+        <label for="moisture">Soil moisture (%)</label>
+        <input type="number" id="moisture" step="1" min="0" max="100" placeholder="e.g. 65" required>
+      </div>
+
+      <div class="field-row">
+        <label for="temperature">Avg. temperature (°C)</label>
+        <input type="number" id="temperature" step="0.5" placeholder="e.g. 24" required>
+      </div>
+
+      <div class="field-row">
+        <label for="rainfall">Rainfall (mm)</label>
+        <input type="number" id="rainfall" step="1" min="0" placeholder="e.g. 100" required>
+      </div>
+
+      <div class="field-row">
+        <label for="soil_type">Soil type</label>
+        <select id="soil_type">
+          <option value="">Any / not sure</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label for="location">Climate zone</label>
+        <select id="location">
+          <option value="">Any / not sure</option>
+        </select>
+      </div>
+
+      <fieldset class="npk-fieldset">
+        <legend>Soil nutrients (optional, kg/ha)</legend>
+        <div class="npk-row">
+          <div class="field-row">
+            <label for="nitrogen">Nitrogen (N)</label>
+            <input type="number" id="nitrogen" step="1" min="0" placeholder="optional">
+          </div>
+          <div class="field-row">
+            <label for="phosphorus">Phosphorus (P)</label>
+            <input type="number" id="phosphorus" step="1" min="0" placeholder="optional">
+          </div>
+          <div class="field-row">
+            <label for="potassium">Potassium (K)</label>
+            <input type="number" id="potassium" step="1" min="0" placeholder="optional">
+          </div>
+        </div>
+      </fieldset>
+
+      <button type="submit" id="submit-btn">Predict best crop</button>
+      <p class="error-msg" id="error-msg"></p>
+    </form>
+  </section>
+
+  <section class="card results-card" id="results-card" hidden>
+    <h2>Recommendation</h2>
+    <div class="top-match" id="top-match"></div>
+    <h3>Other good options</h3>
+    <div class="alternatives" id="alternatives"></div>
+  </section>
+
+  <section class="card results-card placeholder" id="placeholder-card">
+    <p>Fill in the form and click <strong>Predict best crop</strong> to see your recommendation here.</p>
+  </section>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
