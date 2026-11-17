@@ -30,10 +30,11 @@ INSERT_SQL = f"""
     VALUES ({", ".join(["%s"] * len(COLUMNS))})
 """
 
+
 def clean_text(row):
     for col in TEXT_COLUMNS:
         value = (row.get(col) or "").strip()
-        row[col] = " ".join(value.split()).title()
+        row[col] = " ".join(word.capitalize() for word in value.split())
     return row
 
 
@@ -94,17 +95,37 @@ def fill_missing_nutrients(rows):
     return rows
 
 
+def needs_swap(row):
+    return any(
+        row[low] is not None and row[high] is not None and row[low] > row[high]
+        for low, high in MIN_MAX_PAIRS
+    )
+
+
 def clean_rows(raw_rows):
     cleaned = []
+    swapped = 0
     for row in raw_rows:
         row = clean_text(row)
         row = convert_numeric(row)
+        was_swapped = needs_swap(row)
         row = swap_min_max(row)
         if is_valid(row):
             cleaned.append(row)
-    cleaned = remove_duplicates(cleaned)
-    cleaned = fill_missing_nutrients(cleaned)
-    return cleaned
+            swapped += was_swapped
+
+    invalid = len(raw_rows) - len(cleaned)
+    unique = remove_duplicates(cleaned)
+    duplicates = len(cleaned) - len(unique)
+    imputed = sum(1 for r in unique for c in ["nitrogen", "phosphorus", "potassium"] if r[c] is None)
+    final = fill_missing_nutrients(unique)
+
+    print("Cleaning summary:")
+    print(f"  Fixed swapped min/max values in {swapped} rows")
+    print(f"  Dropped {invalid} invalid rows")
+    print(f"  Removed {duplicates} duplicate crops")
+    print(f"  Filled {imputed} missing nutrient values with column averages")
+    return final
 
 
 def main():
