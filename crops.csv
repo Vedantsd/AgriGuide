@@ -111,3 +111,28 @@ Capsicum,6.0,7.0,60,70,Loam,18,27,60,100,Temperate,2,6,150,80,100
 Drumstick,6.3,7.0,40,60,Sandy Loam,25,35,25,75,Semi-arid,1,12,100,50,50
 Alfalfa,6.5,7.5,50,70,Loam,15,30,50,100,Temperate,1,12,25,60,100
 Napier Grass,5.5,7.5,50,70,Loam,25,35,100,200,Tropical,1,12,150,50,50
+  pearl millet  ,5.5,7.5,30,50,  sandy  ,25,35,25,60,ARID,6,9,40,20,20
+RICE,5.5,6.5,80,90,Clay,20,30,150,300,Tropical,6,10,120,40,40
+almond,8.0,6.0,40,60, loam ,15,30,60,40,temperate,1,12,100,50,60
+,6.0,7.0,50,70,Loam,20,30,50,100,Tropical,3,6,80,40,40
+PISTACHIO,7.0,8.5,20,40,SANDY LOAM,20,40,20,40,Arid,1,12,80,40,60
+Teff,65,7.5,40,60,Sandy Loam,15,30,30,60,Semi-arid,6,9,40,20,20
+Walnut,6.0,7.5,50,70,Loam,25,10,80,120,Temperate,1,12,90,40,60
+  wheat  ,6.0,7.5,40,60,Loam,15,25,50,100,Temperate,11,4,100,50,50
+  mulberry  ,6.2,6.8,60,80,Loam,24,28,60,100,tropical,1,12,,,
+Sunn Hemp,6.0,8.0,40,150,Sandy Loam,22,35,60,100,Tropical,6,9,20,40,40
+Tamarind,5.5,8.5,40,60,Sandy Loam,25,35,50,150,Semi-Arid,1,12,N/A,25,N/A
+black   gram,6.0,7.5,60,80,loam,25,35,60,100,tropical,7,10,40,60,20
+Amla,6.5,9.5,40,60,loam,20,35,60,100,SEMI-ARID,1,12,100,50,50
+Kenaf,6.0,7.5,50,70,Loam,22,32,60,100,Tropical,4,14,60,30,30
+ridge  gourd,6.0,7.0,60,80,Loam,25,35,60,100,Tropical,3,7, 100 , 60 , 40
+Tomato,6.0,6.8,60,80,Sandy Loam,18,24,50,80,Temperate,3,6,200,80,200
+Ash Gourd,6.0,7.0,60,80,Loam,20,35,60,100,Tropical,,,80,40,40
+Ramie,5.5,7.0,60,80,Loam,20,30,-50,120,Tropical,4,10,60,30,30
+COLOCASIA,5.5,7.0,70,90,CLAY,21,27,120,250,TROPICAL,4,11,80,60,80
+Sisal,5.5,8.0,,,Sandy Loam,22,32,60,120,Semi-arid,1,12,40,20,40
+Amaranth ,6.0,7.5,40,60,Loam,20,30,40,80,Tropical,6,9,60,30,30
+Banana ,5.5,7.0,75,85,Loam,26,30,100,200,Tropical,1,12,200,75,300
+Stevia,6.5,7.5,60,80,Sandy Loam,15,30,60,100,Tropical,6,11,-100,50,50
+Mint,6.0,7.5,80,70,Loam,20,30,100,150,temperate,2,6,120,60,60
+Cinnamon,5.0,6.5,70,85,Sandy Loam,twenty,32,150,250,Tropical,1,12,60,40,40
