@@ -24,6 +24,34 @@ report parsing, statsmodels and scipy for statistics.
   - Welch's two-sample t-test between two groups, plus a variance-ratio F-test.
   - One-way ANOVA (F-test) across all groups of a category (climate zone or soil type).
 
+## Dataset
+
+`crops.csv` is a raw file of 137 rows: 112 clean crop records plus 25 rows with deliberate
+data-entry problems, so that `seed_data.py` has real cleaning work to do. After cleaning,
+124 unique crops are loaded into Postgres. The covered crops include cereals and millets,
+pulses, oilseeds, fibre crops, plantation crops, spices, fruits, vegetables, tubers and fodder.
+
+| Problem in the raw file | Example rows | Cleaning step | Result |
+|---|---|---|---|
+| Extra spaces and odd capitalisation | `  pearl millet  `, `COLOCASIA`, `ridge  gourd`, soil `  sandy  `, zone `ARID` | `clean_text` | Kept and standardised (`Pearl Millet`, `Sandy`, `Arid`) |
+| Min greater than max | Almond (pH, rainfall), Walnut (temperature), Mint (moisture) | `swap_min_max` | Kept, values swapped |
+| Blank or `N/A` nutrients | Mulberry, Tamarind | `convert_numeric`, `fill_missing_nutrients` | Kept, filled with the column average |
+| Missing planting months | Ash Gourd | `convert_numeric` | Kept, stored as NULL and shown as "Not specified" |
+| Impossible or missing values | Teff (pH 65), Sunn Hemp (moisture 150), Kenaf (month 14), Ramie (negative rainfall), Stevia (negative nitrogen), Sisal (blank moisture), Cinnamon (text in temperature), one row with no name | `is_valid` | Dropped (8 rows) |
+| Repeated crops | RICE, wheat, black gram, Tomato, Banana | `remove_duplicates` | Dropped (5 rows), first occurrence kept |
+
+Running `seed_data.py` prints a summary of these fixes. Counts after cleaning:
+
+| Column | Values |
+|---|---|
+| Soil type | Clay (7), Loam (70), Sandy Loam (38), Sandy (9) |
+| Climate zone | Tropical (49), Temperate (43), Semi-arid (21), Arid (11) |
+
+The values are approximate agronomic reference figures intended for demonstration and
+teaching. Check them against local agricultural guidelines before using the
+recommendations for real planting decisions. To add a crop, append a row to `crops.csv`
+with the same 16 columns and re-run `schema.sql` and `seed_data.py`.
+
 ## Prerequisites
 
 - Python 3.10 or newer (developed and tested on 3.12)
@@ -61,7 +89,7 @@ python seed_data.py
 `schema.sql` drops and recreates the `crops` table, so run it again before re-seeding to
 avoid duplicate rows. `seed_data.py` cleans `crops.csv` (trims text, converts numbers, fixes
 swapped min/max values, removes invalid rows and duplicates, fills missing N/P/K with the
-column average) and inserts 42 crops.
+column average) and inserts the 124 crops that survive cleaning, then prints a cleaning summary.
 
 **5. Run the app.**
 
@@ -71,13 +99,20 @@ python app.py
 
 Open http://127.0.0.1:5000.
 
-## Try it with the sample report
+## Try it with a soil test report
 
-1. On the Predict page, choose `samples/sample_soil_test_report.pdf`.
+The `samples/` folder has two PDF reports to try:
+
+| File | Expected top match |
+|---|---|
+| `soil_test_report_vedant_desai.pdf` | Pomegranate |
+| `sample_soil_test_report.pdf` | Coconut |
+
+1. On the Predict page, choose one of the PDFs.
 2. Click **Auto-fill**. All nine fields are filled in.
-3. Click **Predict best crop**. The top result is Coconut.
+3. Click **Predict best crop**.
 
-The sample report contains fictional data and is for demonstration only.
+The report data is made up for demonstration.
 
 ## How soil report parsing works
 
@@ -95,10 +130,11 @@ The sample report contains fictional data and is for demonstration only.
 
 ## Statistics notes
 
-- The dataset has 42 rows and the regression uses 4 predictors, so treat the results as
-  exploratory. A significant overall F-test does not mean the model predicts well on new data.
-- Groups with fewer than 2 observations (for example the single Arid crop) are skipped in
-  the t-test and ANOVA, and the result says so.
+- The regression uses 124 rows and 4 predictors. A significant overall F-test does not mean
+  the model predicts well on new data; for nitrogen it explains only about a quarter of the
+  variation, so treat the results as exploratory.
+- Groups with fewer than 2 observations are skipped in the t-test and ANOVA, and the result
+  says so.
 - Significance is judged at α = 0.05.
 
 ## Project structure
@@ -112,10 +148,11 @@ agriguide/
 ├── stats_analysis.py       Regression, t-test and F-tests
 ├── seed_data.py            Cleans crops.csv and loads it into Postgres
 ├── schema.sql              Table definition
-├── crops.csv               Dataset (42 crops)
+├── crops.csv               Raw dataset (137 rows, 124 after cleaning)
 ├── requirements.txt
 ├── .env.example
 ├── samples/
+│   ├── soil_test_report_vedant_desai.pdf
 │   └── sample_soil_test_report.pdf
 ├── templates/
 │   ├── base.html           Header, logo, navigation
