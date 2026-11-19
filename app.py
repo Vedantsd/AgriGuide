@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 
+import binning
 import db
 import stats_analysis as sa
 from recommender import rank_crops
@@ -72,7 +73,11 @@ def predict():
         return jsonify({"error": "pH, moisture, temperature, and rainfall are required."}), 400
 
     ranked = rank_crops(user, db.fetch_all_crops())
-    return jsonify({"top_match": ranked[0], "alternatives": ranked[1:4]})
+    return jsonify({
+        "top_match": ranked[0],
+        "alternatives": ranked[1:4],
+        "profile": binning.describe_conditions(user),
+    })
 
 
 @app.route("/api/upload-report", methods=["POST"])
@@ -96,6 +101,7 @@ def stats_meta():
     return jsonify({
         "targets": sa.TARGETS,
         "variables": sa.NUMERIC_VARS,
+        "bin_methods": binning.METHODS,
         "groups": {col: sorted(df[col].dropna().unique().tolist()) for col in sa.GROUP_COLS},
     })
 
@@ -118,6 +124,15 @@ def stats_ttest():
 def stats_anova():
     args = request.args
     return run_stats(sa.run_anova, args.get("variable"), args.get("group_col"))
+
+
+@app.route("/api/stats/binning")
+def stats_binning():
+    args = request.args
+    return run_stats(
+        binning.run_binning,
+        args.get("variable"), args.get("method", "custom"), args.get("bins", "4"), args.get("group_col"),
+    )
 
 
 if __name__ == "__main__":
