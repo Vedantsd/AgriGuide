@@ -364,3 +364,40 @@ button#submit-btn:disabled { background: #9ca6a0; cursor: wait; }
   line-height: 1.5;
   margin: .6rem 0 0;
 }
+
+.profile { margin-bottom: 1.1rem; }
+
+.profile-title {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--ink-500);
+  margin: 0 0 .4rem;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+.chip {
+  background: var(--green-100);
+  color: var(--green-900);
+  font-size: .8rem;
+  font-weight: 600;
+  padding: .3rem .7rem;
+  border-radius: 999px;
+}
+
+.narrow { width: 5rem; }
+
+.bars { display: grid; gap: .45rem; margin: .8rem 0; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 6.5rem;
+  align-items: center;
+  gap: .6rem;
+  font-size: .82rem;
+}
+
+.bar-name { font-weight: 600; color: var(--green-900); }
+.bar-track { background: var(--earth-100); border-radius: 6px; height: .9rem; overflow: hidden; }
+.bar-fill { background: var(--green-600); height: 100%; border-radius: 6px; }
+.bar-val { color: var(--ink-500); text-align: right; white-space: nowrap; }

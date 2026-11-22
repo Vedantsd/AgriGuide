@@ -9,6 +9,9 @@ const LABELS = {
   location: "Climate zone",
   soil_type: "Soil type",
   const: "Intercept",
+  custom: "Agronomic categories",
+  equal_width: "Equal-width bins",
+  quantile: "Quantile bins",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -143,6 +146,50 @@ function renderAnova(d) {
   ];
 }
 
+function makeBars(rows) {
+  const wrap = document.createElement("div");
+  wrap.className = "bars";
+  rows.forEach((r) => {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    const name = document.createElement("span");
+    name.className = "bar-name";
+    name.textContent = r.bin;
+    const track = document.createElement("div");
+    track.className = "bar-track";
+    const fill = document.createElement("div");
+    fill.className = "bar-fill";
+    fill.style.width = `${r.percent}%`;
+    track.appendChild(fill);
+    const value = document.createElement("span");
+    value.className = "bar-val";
+    value.textContent = `${r.count} (${r.percent}%)`;
+    row.append(name, track, value);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+function renderBinning(d) {
+  const nodes = [
+    makeBars(d.rows),
+    makeTable(
+      ["Bin", "Range", "Count", "Percent"],
+      d.rows.map((r) => [r.bin, r.range, r.count, `${r.percent}%`])
+    ),
+  ];
+  if (d.crosstab) {
+    const ct = d.crosstab;
+    nodes.push(makeHeading(`Bins by ${label(ct.group_col).toLowerCase()}`));
+    nodes.push(makeTable(
+      ["Bin", ...ct.columns, "Total"],
+      ct.rows.map((r) => [r.bin, ...r.counts, r.counts.reduce((a, b) => a + b, 0)])
+    ));
+  }
+  nodes.push(makeInterpretation(d.interpretation));
+  return nodes;
+}
+
 function refreshGroups(prefix, groups) {
   const values = groups[$(`${prefix}-col`).value] || [];
   fillSelect($("t-a"), values);
@@ -190,6 +237,25 @@ async function init() {
       group_col: $("a-col").value,
     });
     runCard($("a-run"), $("a-error"), $("a-out"), `/api/stats/anova?${params}`, renderAnova);
+  });
+
+  fillSelect($("b-var"), meta.variables);
+  fillSelect($("b-method"), meta.bin_methods);
+  fillSelect($("b-col"), groupCols);
+  $("b-col").prepend(new Option("None", ""));
+  $("b-col").value = "";
+  const syncBins = () => { $("b-bins").disabled = $("b-method").value === "custom"; };
+  $("b-method").addEventListener("change", syncBins);
+  syncBins();
+
+  $("b-run").addEventListener("click", () => {
+    const params = new URLSearchParams({
+      variable: $("b-var").value,
+      method: $("b-method").value,
+      bins: $("b-bins").value,
+      group_col: $("b-col").value,
+    });
+    runCard($("b-run"), $("b-error"), $("b-out"), `/api/stats/binning?${params}`, renderBinning);
   });
 }
 

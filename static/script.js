@@ -5,6 +5,7 @@ const resultsCard = document.getElementById("results-card");
 const placeholderCard = document.getElementById("placeholder-card");
 const topMatchEl = document.getElementById("top-match");
 const alternativesEl = document.getElementById("alternatives");
+const profileEl = document.getElementById("profile");
 const reportInput = document.getElementById("report-file");
 const uploadBtn = document.getElementById("upload-btn");
 const uploadStatus = document.getElementById("upload-status");
@@ -135,6 +136,23 @@ function renderAlternatives(alts) {
   });
 }
 
+function renderProfile(profile) {
+  profileEl.innerHTML = "";
+  if (!profile || !profile.length) return;
+  const title = document.createElement("p");
+  title.className = "profile-title";
+  title.textContent = "Your field profile";
+  const chips = document.createElement("div");
+  chips.className = "chips";
+  profile.forEach((item) => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = `${item.label}: ${item.category}`;
+    chips.appendChild(chip);
+  });
+  profileEl.append(title, chips);
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMsg.textContent = "";
@@ -161,6 +179,7 @@ form.addEventListener("submit", async (e) => {
     resultsCard.hidden = false;
     renderTopMatch(data.top_match);
     renderAlternatives(data.alternatives);
+    renderProfile(data.profile);
   } catch (err) {
     errorMsg.textContent = "Could not reach the server. Is the Flask app running?";
     console.error(err);
