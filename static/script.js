@@ -1,5 +1,6 @@
 const form = document.getElementById("predict-form");
 const submitBtn = document.getElementById("submit-btn");
+const submitLabel = document.getElementById("submit-label");
 const errorMsg = document.getElementById("error-msg");
 const resultsCard = document.getElementById("results-card");
 const placeholderCard = document.getElementById("placeholder-card");
@@ -9,6 +10,11 @@ const profileEl = document.getElementById("profile");
 const reportInput = document.getElementById("report-file");
 const uploadBtn = document.getElementById("upload-btn");
 const uploadStatus = document.getElementById("upload-status");
+const dropzone = document.getElementById("dropzone");
+const filePickerLabel = document.getElementById("file-picker-label");
+const fileNameEl = document.getElementById("file-name");
+const sampleBtn = document.getElementById("sample-btn");
+const resetBtn = document.getElementById("reset-btn");
 
 const FIELD_IDS = [
   "ph", "moisture", "temperature", "rainfall",
@@ -20,6 +26,25 @@ const FIELD_NAMES = {
   soil_type: "soil type", location: "climate zone",
   nitrogen: "N", phosphorus: "P", potassium: "K",
 };
+
+const SAMPLE_VALUES = {
+  ph: 6.4,
+  moisture: 74,
+  temperature: 27,
+  rainfall: 140,
+  soil_type: "Sandy Loam",
+  location: "Tropical",
+  nitrogen: 110,
+  phosphorus: 25,
+  potassium: 135,
+};
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
 
 function fillSelect(selectId, values) {
   const select = document.getElementById(selectId);
@@ -49,21 +74,85 @@ function fieldValue(id) {
 }
 
 function setField(id, value) {
-  const el = document.getElementById(id);
-  if (el.tagName === "SELECT") {
-    const match = Array.from(el.options).find(
+  const input = document.getElementById(id);
+  if (input.tagName === "SELECT") {
+    const match = Array.from(input.options).find(
       (o) => o.value.toLowerCase() === String(value).toLowerCase()
     );
     if (!match) return false;
-    el.value = match.value;
+    input.value = match.value;
     return true;
   }
-  el.value = value;
+  input.value = value;
   return true;
 }
 
 function describe(ids) {
   return ids.map((id) => FIELD_NAMES[id]).join(", ");
+}
+
+function syncSelectedFile() {
+  const file = reportInput.files[0];
+  if (file) {
+    const sizeKb = Math.max(1, Math.round(file.size / 1024));
+    fileNameEl.textContent = `${file.name} (${sizeKb} KB)`;
+    filePickerLabel.classList.add("has-file");
+  } else {
+    fileNameEl.textContent = "Choose PDF file…";
+    filePickerLabel.classList.remove("has-file");
+  }
+}
+
+reportInput.addEventListener("change", () => {
+  syncSelectedFile();
+  uploadStatus.textContent = "";
+  uploadStatus.classList.remove("error");
+});
+
+if (dropzone) {
+  ["dragenter", "dragover"].forEach((evt) => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.add("drag-over");
+    });
+  });
+
+  ["dragleave", "drop"].forEach((evt) => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("drag-over");
+    });
+  });
+
+  dropzone.addEventListener("drop", (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    reportInput.files = dt.files;
+    syncSelectedFile();
+    uploadBtn.click();
+  });
+}
+
+if (sampleBtn) {
+  sampleBtn.addEventListener("click", () => {
+    Object.entries(SAMPLE_VALUES).forEach(([id, val]) => setField(id, val));
+    errorMsg.textContent = "";
+  });
+}
+
+if (resetBtn) {
+  resetBtn.addEventListener("click", () => {
+    form.reset();
+    reportInput.value = "";
+    syncSelectedFile();
+    uploadStatus.textContent = "";
+    uploadStatus.classList.remove("error");
+    errorMsg.textContent = "";
+    resultsCard.hidden = true;
+    placeholderCard.hidden = false;
+  });
 }
 
 uploadBtn.addEventListener("click", async () => {
@@ -91,7 +180,7 @@ uploadBtn.addEventListener("click", async () => {
     });
     const missing = FIELD_IDS.filter((id) => !filled.includes(id));
 
-    let message = `Filled ${filled.length} field(s): ${describe(filled) || "none"}.`;
+    let message = `Auto-filled ${filled.length} field(s): ${describe(filled) || "none"}.`;
     if (missing.length) message += ` Not found in report: ${describe(missing)}.`;
     uploadStatus.textContent = message;
   } catch (err) {
@@ -103,61 +192,134 @@ uploadBtn.addEventListener("click", async () => {
   }
 });
 
+function createMatchRing(percent) {
+  const clamped = Math.max(0, Math.min(100, Number(percent) || 0));
+  const r = 32;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference * (1 - clamped / 100);
+
+  const ring = el("div", "match-ring");
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("viewBox", "0 0 76 76");
+  svg.setAttribute("aria-hidden", "true");
+
+  const bg = document.createElementNS(svgNS, "circle");
+  bg.setAttribute("class", "match-ring-bg");
+  bg.setAttribute("cx", "38");
+  bg.setAttribute("cy", "38");
+  bg.setAttribute("r", String(r));
+
+  const fill = document.createElementNS(svgNS, "circle");
+  fill.setAttribute("class", "match-ring-fill");
+  fill.setAttribute("cx", "38");
+  fill.setAttribute("cy", "38");
+  fill.setAttribute("r", String(r));
+  fill.setAttribute("stroke-dasharray", circumference.toFixed(2));
+  fill.setAttribute("stroke-dashoffset", offset.toFixed(2));
+
+  svg.append(bg, fill);
+
+  const textWrap = el("div", "match-ring-text");
+  textWrap.append(
+    el("span", "match-ring-val", `${clamped.toFixed(1)}%`),
+    el("span", "match-ring-lbl", "Match")
+  );
+
+  ring.append(svg, textWrap);
+  return ring;
+}
+
 function renderTopMatch(crop) {
-  topMatchEl.innerHTML = `
-    <p class="crop-name">${crop.crop_name}</p>
-    <p class="match-percent">${crop.match_percent}% match to your conditions</p>
-    <dl>
-      <dt>Ideal pH</dt><dd>${crop.ph_range}</dd>
-      <dt>Ideal moisture</dt><dd>${crop.moisture_range}</dd>
-      <dt>Ideal temperature</dt><dd>${crop.temperature_range}</dd>
-      <dt>Ideal rainfall</dt><dd>${crop.rainfall_range}</dd>
-      <dt>Soil type</dt><dd>${crop.soil_type}</dd>
-      <dt>Climate zone</dt><dd>${crop.location}</dd>
-      <dt>Typical N/P/K</dt><dd>${crop.npk}</dd>
-      <dt>Planting window</dt><dd>${crop.planting_window}</dd>
-    </dl>
-  `;
+  const head = el("div", "top-match-head");
+  const titleBox = el("div");
+  titleBox.append(
+    el("span", "top-badge", "Top recommendation"),
+    el("p", "crop-name", crop.crop_name),
+    el("p", "match-subtitle", `${crop.soil_type} soil · ${crop.location} zone`)
+  );
+  head.append(titleBox, createMatchRing(crop.match_percent));
+
+  const metrics = [
+    ["Ideal pH", crop.ph_range],
+    ["Ideal moisture", crop.moisture_range],
+    ["Ideal temperature", crop.temperature_range],
+    ["Ideal rainfall", crop.rainfall_range],
+    ["Soil type", crop.soil_type],
+    ["Climate zone", crop.location],
+    ["Typical N / P / K", crop.npk],
+    ["Planting window", crop.planting_window],
+  ];
+
+  const grid = el("div", "top-match-grid");
+  metrics.forEach(([label, val]) => {
+    const tile = el("div", "metric-tile");
+    tile.append(
+      el("span", "metric-tile-label", label),
+      el("span", "metric-tile-val", val)
+    );
+    grid.appendChild(tile);
+  });
+
+  topMatchEl.replaceChildren(head, grid);
 }
 
 function renderAlternatives(alts) {
-  alternativesEl.innerHTML = "";
-  alts.forEach((crop) => {
-    const div = document.createElement("div");
-    div.className = "alt-card";
-    div.innerHTML = `
-      <div>
-        <div class="alt-name">${crop.crop_name}</div>
-        <div class="alt-meta">${crop.soil_type} soil &middot; ${crop.location}</div>
-      </div>
-      <div class="alt-score">${crop.match_percent}%</div>
-    `;
-    alternativesEl.appendChild(div);
+  alternativesEl.replaceChildren();
+  alts.forEach((crop, idx) => {
+    const card = el("div", "alt-card");
+
+    const top = el("div", "alt-top");
+    const titleWrap = el("div", "alt-title-wrap");
+    titleWrap.append(
+      el("span", "alt-rank", `#${idx + 2}`),
+      el("span", "alt-name", crop.crop_name)
+    );
+
+    const scoreWrap = el("div", "alt-score-wrap");
+    const bar = el("div", "alt-bar");
+    const barFill = el("div", "alt-bar-fill");
+    barFill.style.width = `${Math.max(0, Math.min(100, crop.match_percent))}%`;
+    bar.appendChild(barFill);
+
+    scoreWrap.append(bar, el("div", "alt-score", `${crop.match_percent}%`));
+    top.append(titleWrap, scoreWrap);
+
+    const meta = el("div", "alt-meta");
+    meta.append(
+      el("span", "", `${crop.soil_type} · ${crop.location}`),
+      el("span", "", `pH ${crop.ph_range}`),
+      el("span", "", `${crop.temperature_range}`),
+      el("span", "", crop.planting_window)
+    );
+
+    card.append(top, meta);
+    alternativesEl.appendChild(card);
   });
 }
 
 function renderProfile(profile) {
-  profileEl.innerHTML = "";
+  profileEl.replaceChildren();
   if (!profile || !profile.length) return;
-  const title = document.createElement("p");
-  title.className = "profile-title";
-  title.textContent = "Your field profile";
-  const chips = document.createElement("div");
-  chips.className = "chips";
+  profileEl.appendChild(el("p", "profile-title", "Your field profile"));
+
+  const chips = el("div", "chips");
   profile.forEach((item) => {
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = `${item.label}: ${item.category}`;
+    const chip = el("span", "chip");
+    chip.append(
+      el("span", "chip-label", `${item.label}:`),
+      document.createTextNode(` ${item.category}`)
+    );
     chips.appendChild(chip);
   });
-  profileEl.append(title, chips);
+  profileEl.appendChild(chips);
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMsg.textContent = "";
   submitBtn.disabled = true;
-  submitBtn.textContent = "Predicting…";
+  submitLabel.textContent = "Scoring crops…";
 
   const payload = {};
   FIELD_IDS.forEach((id) => { payload[id] = fieldValue(id); });
@@ -177,15 +339,15 @@ form.addEventListener("submit", async (e) => {
 
     placeholderCard.hidden = true;
     resultsCard.hidden = false;
+    renderProfile(data.profile);
     renderTopMatch(data.top_match);
     renderAlternatives(data.alternatives);
-    renderProfile(data.profile);
   } catch (err) {
     errorMsg.textContent = "Could not reach the server. Is the Flask app running?";
     console.error(err);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Predict best crop";
+    submitLabel.textContent = "Predict best crop";
   }
 });
 
