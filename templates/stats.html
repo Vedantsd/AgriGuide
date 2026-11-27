@@ -1,29 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}AgriGuide · Statistics{% endblock %}
+{% block title %}AgriGuide · Dataset Statistics{% endblock %}
+{% block eyebrow %}Exploratory Analytics{% endblock %}
+{% block heading %}Crop dataset statistics{% endblock %}
+{% block tagline %}Run multiple linear regression, Welch's t-tests, variance F-tests, one-way ANOVA, and agronomic binning across the crop database.{% endblock %}
 
-{% block tagline %}Regression, t-test and F-tests on the crop dataset stored in your database.{% endblock %}
+{% block hero_aside %}
+<nav class="quick-jump" aria-label="Statistical modules">
+  <a href="#sec-reg">Regression</a>
+  <a href="#sec-ttest">t-Test &amp; F-Test</a>
+  <a href="#sec-anova">One-Way ANOVA</a>
+  <a href="#sec-binning">Data Binning</a>
+</nav>
+{% endblock %}
 
 {% block content %}
 <main class="stats-layout">
 
-  <section class="card">
-    <h2>Multiple linear regression</h2>
-    <p class="hint">Predicts a nutrient requirement from average pH, moisture, temperature and rainfall. Includes the overall F-test and a t-test for every coefficient.</p>
+  <section class="card stats-card" id="sec-reg">
+    <div class="stats-card-head">
+      <div>
+        <span class="module-badge">OLS Model</span>
+        <h2>Multiple linear regression</h2>
+        <p class="hint">Predicts a nutrient requirement from average pH, moisture, temperature and rainfall. Includes the overall F-test and a t-test for every coefficient.</p>
+      </div>
+    </div>
     <div class="control-row">
       <div class="ctl">
-        <label for="reg-target">Target</label>
+        <label for="reg-target">Target nutrient</label>
         <select id="reg-target"></select>
       </div>
-      <button type="button" class="btn" id="reg-run">Run regression</button>
+      <button type="button" class="btn btn-primary" id="reg-run">Run regression</button>
     </div>
-    <p class="error-msg" id="reg-error"></p>
-    <div id="reg-out"></div>
+    <p class="error-msg" id="reg-error" role="alert"></p>
+    <div class="stats-out" id="reg-out"></div>
   </section>
 
-  <section class="card">
-    <h2>Two-sample t-test and variance F-test</h2>
-    <p class="hint">Compares the mean of a variable between two groups (Welch's t-test) and checks whether their variances differ (F-test).</p>
+  <section class="card stats-card" id="sec-ttest">
+    <div class="stats-card-head">
+      <div>
+        <span class="module-badge">Two-Sample Comparison</span>
+        <h2>Two-sample t-test and variance F-test</h2>
+        <p class="hint">Compares the mean of a variable between two groups (Welch's t-test) and checks whether their variances differ (F-test).</p>
+      </div>
+    </div>
     <div class="control-row">
       <div class="ctl">
         <label for="t-var">Variable</label>
@@ -41,15 +61,20 @@
         <label for="t-b">Group B</label>
         <select id="t-b"></select>
       </div>
-      <button type="button" class="btn" id="t-run">Run test</button>
+      <button type="button" class="btn btn-primary" id="t-run">Run test</button>
     </div>
-    <p class="error-msg" id="t-error"></p>
-    <div id="t-out"></div>
+    <p class="error-msg" id="t-error" role="alert"></p>
+    <div class="stats-out" id="t-out"></div>
   </section>
 
-  <section class="card">
-    <h2>One-way ANOVA (F-test)</h2>
-    <p class="hint">Tests whether the mean of a variable differs across all groups of a category.</p>
+  <section class="card stats-card" id="sec-anova">
+    <div class="stats-card-head">
+      <div>
+        <span class="module-badge">Multi-Group Variance</span>
+        <h2>One-way ANOVA (F-test)</h2>
+        <p class="hint">Tests whether the mean of a variable differs across all groups of a category.</p>
+      </div>
+    </div>
     <div class="control-row">
       <div class="ctl">
         <label for="a-var">Variable</label>
@@ -59,15 +84,20 @@
         <label for="a-col">Group by</label>
         <select id="a-col"></select>
       </div>
-      <button type="button" class="btn" id="a-run">Run ANOVA</button>
+      <button type="button" class="btn btn-primary" id="a-run">Run ANOVA</button>
     </div>
-    <p class="error-msg" id="a-error"></p>
-    <div id="a-out"></div>
+    <p class="error-msg" id="a-error" role="alert"></p>
+    <div class="stats-out" id="a-out"></div>
   </section>
 
-  <section class="card">
-    <h2>Data binning</h2>
-    <p class="hint">Groups a numeric variable into bins and counts the crops in each. Agronomic categories use fixed cut-offs (for example acidic, neutral, alkaline); equal-width and quantile bins are computed from the data. You can also cross-tabulate the bins against climate zone or soil type.</p>
+  <section class="card stats-card" id="sec-binning">
+    <div class="stats-card-head">
+      <div>
+        <span class="module-badge">Distribution &amp; Crosstab</span>
+        <h2>Data binning</h2>
+        <p class="hint">Groups a numeric variable into bins and counts the crops in each. Agronomic categories use fixed cut-offs (e.g. acidic, neutral, alkaline); equal-width and quantile bins are computed from the data.</p>
+      </div>
+    </div>
     <div class="control-row">
       <div class="ctl">
         <label for="b-var">Variable</label>
@@ -85,10 +115,10 @@
         <label for="b-col">Cross-tab by</label>
         <select id="b-col"></select>
       </div>
-      <button type="button" class="btn" id="b-run">Run binning</button>
+      <button type="button" class="btn btn-primary" id="b-run">Run binning</button>
     </div>
-    <p class="error-msg" id="b-error"></p>
-    <div id="b-out"></div>
+    <p class="error-msg" id="b-error" role="alert"></p>
+    <div class="stats-out" id="b-out"></div>
   </section>
 
 </main>

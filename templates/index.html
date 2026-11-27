@@ -1,91 +1,182 @@
 {% extends "base.html" %}
 
-{% block tagline %}Enter your field's conditions or upload a soil test report to find the best-matching crop.{% endblock %}
+{% block title %}AgriGuide · Crop Recommendation{% endblock %}
+{% block eyebrow %}Field Matching Engine{% endblock %}
+{% block heading %}Find the best crop for your soil{% endblock %}
+{% block tagline %}Enter your field's conditions manually or upload a PDF soil test report to score crops across climate, soil texture, and N-P-K profile.{% endblock %}
+
+{% block hero_aside %}
+<div class="hero-badges">
+  <span class="hero-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    PDF Auto-Fill
+  </span>
+  <span class="hero-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Weighted Range Scoring
+  </span>
+</div>
+{% endblock %}
 
 {% block content %}
 <main class="layout">
 
   <section class="card form-card">
-    <h2>Field conditions</h2>
-
-    <div class="upload-box">
-      <label for="report-file">Soil test report (PDF)</label>
-      <div class="upload-row">
-        <input type="file" id="report-file" accept="application/pdf,.pdf">
-        <button type="button" class="btn" id="upload-btn">Auto-fill</button>
+    <div class="card-header">
+      <div>
+        <h2>Field conditions</h2>
+        <p class="card-subtitle">Required: pH, moisture, temperature, and rainfall.</p>
       </div>
-      <p class="upload-status" id="upload-status"></p>
+      <div class="card-actions-inline">
+        <button type="button" class="btn-ghost" id="sample-btn" title="Populate with sample field measurements">Try sample</button>
+        <button type="button" class="btn-ghost" id="reset-btn" title="Clear all inputs">Clear</button>
+      </div>
     </div>
 
-    <form id="predict-form">
-
-      <div class="field-row">
-        <label for="ph">Soil pH</label>
-        <input type="number" id="ph" step="0.1" min="0" max="14" placeholder="e.g. 6.2" required>
+    <div class="upload-box" id="dropzone">
+      <div class="upload-header">
+        <div class="upload-icon-wrap" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-copy">
+          <label for="report-file" class="upload-title">Soil test report (PDF)</label>
+          <span class="upload-hint">Drop a text-based lab report here or browse to auto-fill values</span>
+        </div>
       </div>
 
-      <div class="field-row">
-        <label for="moisture">Soil moisture (%)</label>
-        <input type="number" id="moisture" step="1" min="0" max="100" placeholder="e.g. 65" required>
+      <div class="upload-row">
+        <label for="report-file" class="file-picker-btn" id="file-picker-label">
+          <span id="file-name">Choose PDF file…</span>
+        </label>
+        <input type="file" id="report-file" accept="application/pdf,.pdf" class="sr-only">
+        <button type="button" class="btn btn-secondary" id="upload-btn">
+          <span>Auto-fill</span>
+        </button>
+      </div>
+      <p class="upload-status" id="upload-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <form id="predict-form" novalidate>
+      <div class="form-section-label">Core climate &amp; soil parameters</div>
+      <div class="form-grid-2">
+        <div class="field-row">
+          <label for="ph">Soil pH <span class="req">*</span></label>
+          <div class="input-unit-wrap">
+            <input type="number" id="ph" step="0.1" min="0" max="14" placeholder="6.2" required>
+            <span class="unit-tag">pH</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="moisture">Soil moisture <span class="req">*</span></label>
+          <div class="input-unit-wrap">
+            <input type="number" id="moisture" step="1" min="0" max="100" placeholder="65" required>
+            <span class="unit-tag">%</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="temperature">Avg. temperature <span class="req">*</span></label>
+          <div class="input-unit-wrap">
+            <input type="number" id="temperature" step="0.5" placeholder="24" required>
+            <span class="unit-tag">&deg;C</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="rainfall">Rainfall <span class="req">*</span></label>
+          <div class="input-unit-wrap">
+            <input type="number" id="rainfall" step="1" min="0" placeholder="100" required>
+            <span class="unit-tag">mm</span>
+          </div>
+        </div>
       </div>
 
-      <div class="field-row">
-        <label for="temperature">Avg. temperature (°C)</label>
-        <input type="number" id="temperature" step="0.5" placeholder="e.g. 24" required>
-      </div>
+      <div class="form-section-label">Site characteristics</div>
+      <div class="form-grid-2">
+        <div class="field-row">
+          <label for="soil_type">Soil type</label>
+          <select id="soil_type">
+            <option value="">Any / not sure</option>
+          </select>
+        </div>
 
-      <div class="field-row">
-        <label for="rainfall">Rainfall (mm)</label>
-        <input type="number" id="rainfall" step="1" min="0" placeholder="e.g. 100" required>
-      </div>
-
-      <div class="field-row">
-        <label for="soil_type">Soil type</label>
-        <select id="soil_type">
-          <option value="">Any / not sure</option>
-        </select>
-      </div>
-
-      <div class="field-row">
-        <label for="location">Climate zone</label>
-        <select id="location">
-          <option value="">Any / not sure</option>
-        </select>
+        <div class="field-row">
+          <label for="location">Climate zone</label>
+          <select id="location">
+            <option value="">Any / not sure</option>
+          </select>
+        </div>
       </div>
 
       <fieldset class="npk-fieldset">
-        <legend>Soil nutrients (optional, kg/ha)</legend>
+        <legend>Soil nutrients (optional &middot; kg/ha)</legend>
         <div class="npk-row">
           <div class="field-row">
-            <label for="nitrogen">Nitrogen (N)</label>
-            <input type="number" id="nitrogen" step="1" min="0" placeholder="optional">
+            <label for="nitrogen"><span class="npk-dot npk-n"></span>Nitrogen (N)</label>
+            <input type="number" id="nitrogen" step="1" min="0" placeholder="Optional">
           </div>
           <div class="field-row">
-            <label for="phosphorus">Phosphorus (P)</label>
-            <input type="number" id="phosphorus" step="1" min="0" placeholder="optional">
+            <label for="phosphorus"><span class="npk-dot npk-p"></span>Phosphorus (P)</label>
+            <input type="number" id="phosphorus" step="1" min="0" placeholder="Optional">
           </div>
           <div class="field-row">
-            <label for="potassium">Potassium (K)</label>
-            <input type="number" id="potassium" step="1" min="0" placeholder="optional">
+            <label for="potassium"><span class="npk-dot npk-k"></span>Potassium (K)</label>
+            <input type="number" id="potassium" step="1" min="0" placeholder="Optional">
           </div>
         </div>
       </fieldset>
 
-      <button type="submit" id="submit-btn">Predict best crop</button>
-      <p class="error-msg" id="error-msg"></p>
+      <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/>
+        </svg>
+        <span id="submit-label">Predict best crop</span>
+      </button>
+      <p class="error-msg" id="error-msg" role="alert"></p>
     </form>
   </section>
 
   <section class="card results-card" id="results-card" hidden>
-    <h2>Recommendation</h2>
+    <div class="card-header">
+      <div>
+        <h2>Crop Recommendation</h2>
+        <p class="card-subtitle">Ranked by weighted compatibility across all entered parameters.</p>
+      </div>
+    </div>
+
     <div class="profile" id="profile"></div>
     <div class="top-match" id="top-match"></div>
-    <h3>Other good options</h3>
+
+    <div class="alts-header">
+      <h3>Other strong candidates</h3>
+      <span class="alts-sub">Next best matches</span>
+    </div>
     <div class="alternatives" id="alternatives"></div>
   </section>
 
   <section class="card results-card placeholder" id="placeholder-card">
-    <p>Fill in the form and click <strong>Predict best crop</strong> to see your recommendation here.</p>
+    <div class="placeholder-inner">
+      <div class="placeholder-illustration" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 20h10"/>
+          <path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+          <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>
+          <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+        </svg>
+      </div>
+      <h3>Ready for your field profile</h3>
+      <p>Fill in your soil &amp; climate measurements on the left and select <strong>Predict best crop</strong> to inspect your top match and alternative crops.</p>
+      <ul class="placeholder-steps">
+        <li><span>1</span> Upload a soil lab PDF or enter pH, moisture, temp &amp; rainfall</li>
+        <li><span>2</span> Refine with soil texture, climate zone, or N-P-K levels</li>
+        <li><span>3</span> Compare ideal growing windows and compatibility scores</li>
+      </ul>
+    </div>
   </section>
 
 </main>
